@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Tareas</title>
+  <style>
+    /* Tu CSS existente aquí */
+    .more-info-span {
+      margin-left: 10px;
+      color: #007bff;
+      cursor: pointer;
+    }
+
+    .more-info-span:hover {
+      text-decoration: underline;
+    }
+
+    .complete-span {
+      margin-left: 10px;
+      color: #007bff;
+      cursor: pointer;
+    }
+
+    .complete-span:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <ul id="task-list"></ul>
+
+  <script>
+    function createTaskElement(task) {
+      const li = document.createElement("li");
+      li.classList.add("task-item");
+
+      const taskText = document.createElement("span");
+      taskText.classList.add("text");
+      taskText.textContent = task.text;
+
+      const actionsDiv = document.createElement("div");
+      actionsDiv.classList.add("actions");
+
+      const moreInfoSpan = createMoreInfoSpan(task);
+      const completeSpan = createCompleteSpan(task);
+
+      actionsDiv.appendChild(moreInfoSpan);
+      actionsDiv.appendChild(completeSpan);
+
+      li.appendChild(taskText);
+      li.appendChild(actionsDiv);
+
+      return li;
+    }
+
+    function createMoreInfoSpan(task) {
+      const span = document.createElement("span");
+      span.classList.add("more-info-span");
+      span.textContent = "Más información";
+      return span;
+    }
+
+    function createCompleteSpan(task) {
+      const span = document.createElement("span");
+      span.classList.add("complete-span");
+      span.textContent = "✔ Completar";
+      return span;
+    }
+
+    // Ejemplo de tareas
+    const tasks = [
+      { text: 'Tarea 1' },
+      { text: 'Tarea 2' }
+    ];
+
+    const taskList = document.getElementById('task-list');
+    tasks.forEach(task => {
+      const taskElement = createTaskElement(task);
+      taskList.appendChild(taskElement);
+    });
+  </script>
+</body>
+</html>

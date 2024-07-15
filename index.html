@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendario Mensual</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./css/jquery-ui.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.js"></script> -->
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+  </head>
+
+  <body>
+    <div id="calendar">
+      <h2 class="container">
+        <div class="column">
+          <button id="prev-year">AÑO ANTERIOR</button>
+          <button id="prev-month">MES ANTERIOR</button>
+        </div>
+        <div class="column">
+          <div id="month-year"></div>
+        </div>
+        <div class="column">
+          <button id="next-year">AÑO SIGUIENTE</button>
+          <button id="next-month">MES SIGUIENTE</button>
+        </div>
+      </h2>
+      <div class="days-grid" id="days-container"></div>
+    </div>
+    <div id="popup-overlay" class="hidden">
+      <div class="notes-popup">
+        <div id="atributos">
+          <label for="hour">Hora:</label>
+          <input
+            type="time"
+            id="hour"
+            value="09:00"
+            pattern="[0-2]{1}[0-9]{1}:[0-6]{1}[0-9]{1}"
+          />
+          <label for="note-text">Tarea:</label>
+          <input type="text" id="note-text" placeholder="Ingrese nota" /><br />
+        </div>
+        <button id="save-time">Agregar</button>
+        <div id="notification" class="notification hidden"></div>
+        <div class="popup-content">
+          <div class="notes-list" id="notes-list">
+            <h3>Eventos del día</h3>
+            <ul id="notes-ul"></ul>
+          </div>
+          <button id="close-popup">Cerrar</button>
+        </div>
+      </div>
+    </div>
+    <h3 class="title">Tareas pendientes</h3>
+    <div id="pendientes"></div>
+    <ul id="sortable" class="task-list"></ul>
+
+    <button id="add-task" class="btn">Agregar Tarea</button>
+    <div id="task-input-overlay" class="hidden">
+      <div id="task-input-popup">
+        <label for="task-text">Título de la tarea:</label>
+        <input type="text" id="task-text" />
+        <button id="save-task" class="button">Guardar Tarea</button>
+        <button id="cancel-task" class="button">Cancelar</button>
+      </div>
+    </div>
+    <h3 class="title">Próximas tareas</h3>
+    <div id="proximas"></div>
+    <h3 class="title">Últimas tareas</h3>
+    <div id="ultimas"></div>
+    <script src="script.js"></script>
+  </body>
+</html>

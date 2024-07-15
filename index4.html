@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba de Base de Datos</title>
+</head>
+<body>
+    <h1>Prueba de Base de Datos</h1>
+    <form id="dataForm">
+        Nombre: <input type="text" name="nombrehtml" id="nombre" required>
+        <input type="submit" value="Enviar">
+    </form>
+    <div id="response"></div>
+    <h2>aaaaaaaaaaaa:</h2>
+    <div id="records"></div>
+
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let nombre = document.getElementById('nombre').value;
+            
+            fetch('api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nombrehtml: nombre })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText = data.message;
+                fetchRecords();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        function fetchRecords() {
+            fetch('api.php')
+                .then(response => response.json())
+                .then(data => {
+                    let recordsDiv = document.getElementById('records');
+                    recordsDiv.innerHTML = '';
+                    data.forEach(record => {
+                        let recordDiv = document.createElement('div');
+                        recordDiv.innerHTML = `
+                            <span>${record.id}: ${record.columna1deprueba}</span>
+                            <button onclick="editRecord(${record.id}, '${record.columna1deprueba}')">Editar</button>
+                            <button onclick="deleteRecord(${record.id})">Eliminar</button>
+                        `;
+                        recordsDiv.appendChild(recordDiv);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function editRecord(id, nombre) {
+            let newNombre = prompt("Editar nombre:", nombre);
+            if (newNombre !== null) {
+                fetch('api.php', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id, nombrehtml: newNombre })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('response').innerText = data.message;
+                    fetchRecords();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        function deleteRecord(id) {
+            if (confirm("¿Estás seguro de que deseas eliminar este registro?")) {
+                fetch('api.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('response').innerText = data.message;
+                    fetchRecords();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // Fetch records when the page loads
+        fetchRecords();
+    </script>
+</body>
+</html>
