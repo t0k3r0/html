@@ -21,6 +21,35 @@ body {
   color: #333;
 }
 
+#days-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.day-number {
+  font-size: 100px;
+  color: rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.events-count {
+  position: relative;
+  font-size: 24px;
+  z-index: 1;
+  color: #000;
+}
+
 .days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -29,15 +58,59 @@ body {
 
 .day {
   display: flex;
+  position: relative;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  font-size: 2em;
+  height: 50px;
+  /* width: 100%; */
+  max-width: 100%;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 6px;
-  padding: 15px;
+  padding: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  word-break: break-word; /* Asegura que el texto largo se ajuste en el móvil */
+  word-break: break-word;
+}
+
+.day span {
+  font-size: clamp(
+    14px,
+    5vw,
+    36px
+  ); /* Ajusta el tamaño mínimo, preferido y máximo aquí */ /* Ajusta el tamaño del número aquí */
+  line-height: 1;
+}
+
+.notes-button {
+  position: absolute;
+  display: block;
+  margin-top: 5px;
+  top: 5px;
+  right: 5px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.notes-button:hover {
+  background-color: #0056b3;
+}
+
+.empty {
+  border: 1px solid #ccc;
+  visibility: hidden;
 }
 
 .day:hover {
@@ -46,31 +119,9 @@ body {
 
 .today {
   background-color: #c6e7ea95;
-  color: #fff;
+  color: #000000e4;
 }
 
-.empty {
-  visibility: hidden;
-}
-
-.notes-button {
-  display: block;
-  margin-top: 5px;
-  background-color: #645f5f;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  font-size: 0.9rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.notes-button:hover {
-  background-color: #0056b3;
-}
-
-/* Estilos para el overlay y el popup */
 #popup-overlay {
   position: fixed;
   top: 0;
@@ -108,6 +159,7 @@ body {
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -160,14 +212,18 @@ body {
 
 .container {
   display: flex;
-  flex-direction: row;
   align-items: center;
+  justify-content: center;
+  /* flex-direction: column; */
+  height: 100%;
 }
 
 .column {
-  display: block;
-  justify-content: space-around;
-  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
 }
 
 .column > button {
@@ -241,8 +297,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  word-break: break-word; /* Asegura que el texto largo se ajuste en el móvil */
-  min-height: 50px; /* Altura mínima para elementos */
+  word-break: break-word;
+  /* Asegura que el texto largo se ajuste en el móvil */
+  min-height: 50px;
+  /* Altura mínima para elementos */
 }
 
 .task-item .text {
@@ -361,8 +419,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  word-break: break-word; /* Asegura que el texto largo se ajuste en el móvil */
-  min-height: 50px; /* Altura mínima para elementos */
+  word-break: break-word;
+  /* Asegura que el texto largo se ajuste en el móvil */
+  min-height: 50px;
+  /* Altura mínima para elementos */
 }
 
 .sortable-item .text {
@@ -388,7 +448,7 @@ body {
   list-style-type: none;
   /* margin: 0; */
   padding: 0;
-  width: 60%;
+  width: 100%;
 }
 
 #sortable li {
@@ -410,7 +470,8 @@ body {
   }
 
   .days-grid {
-    grid-template-columns: repeat(7, 1fr); /* Ajusta el número de columnas en móviles */
+    grid-template-columns: repeat(7, 1fr);
+    /* Ajusta el número de columnas en móviles */
     gap: 5px;
   }
 
@@ -467,47 +528,73 @@ body {
     margin-top: 10px;
   }
 }
+
 /* Estilos para el botón */
 .btn {
   display: inline-block;
-  background-color: #007bff; /* Color de fondo */
-  color: #fff; /* Color del texto */
+  background-color: #007bff;
+  /* Color de fondo */
+  color: #fff;
+  /* Color del texto */
   border: none;
-  padding: 10px 20px; /* Padding interior */
-  font-size: 16px; /* Tamaño del texto */
-  font-weight: bold; /* Negrita */
-  border-radius: 4px; /* Bordes redondeados */
-  cursor: pointer; /* Cursor tipo pointer */
-  transition: background-color 0.3s ease; /* Transición suave */
+  padding: 10px 20px;
+  /* Padding interior */
+  font-size: 16px;
+  /* Tamaño del texto */
+  font-weight: bold;
+  /* Negrita */
+  border-radius: 4px;
+  /* Bordes redondeados */
+  cursor: pointer;
+  /* Cursor tipo pointer */
+  transition: background-color 0.3s ease;
+  /* Transición suave */
 }
 
 .btn:hover {
-  background-color: #0056b3; /* Cambio de color al pasar el ratón */
+  background-color: #0056b3;
+  /* Cambio de color al pasar el ratón */
 }
 
 /* Estilos para los títulos */
 .title {
-  font-size: 1.8rem; /* Tamaño de fuente grande */
-  font-weight: bold; /* Negrita */
-  color: #333; /* Color de texto oscuro */
-  margin-bottom: 20px; /* Espaciado inferior */
+  font-size: 1.8rem;
+  /* Tamaño de fuente grande */
+  font-weight: bold;
+  /* Negrita */
+  color: #333;
+  /* Color de texto oscuro */
+  margin-bottom: 20px;
+  /* Espaciado inferior */
 }
+
 /* Estilos para los botones */
 .button {
   display: inline-block;
-  background-color: #007bff; /* Color de fondo azul */
-  color: #fff; /* Color del texto blanco */
+  background-color: #007bff;
+  /* Color de fondo azul */
+  color: #fff;
+  /* Color del texto blanco */
   border: none;
-  padding: 12px 24px; /* Padding interior */
-  font-size: 1rem; /* Tamaño de fuente */
-  font-weight: bold; /* Negrita */
-  border-radius: 4px; /* Bordes redondeados */
-  cursor: pointer; /* Cursor tipo pointer */
-  transition: background-color 0.3s ease; /* Transición suave */
-  text-decoration: none; /* Quitar subrayado de enlace */
-  text-align: center; /* Centrado de texto */
+  padding: 12px 24px;
+  /* Padding interior */
+  font-size: 1rem;
+  /* Tamaño de fuente */
+  font-weight: bold;
+  /* Negrita */
+  border-radius: 4px;
+  /* Bordes redondeados */
+  cursor: pointer;
+  /* Cursor tipo pointer */
+  transition: background-color 0.3s ease;
+  /* Transición suave */
+  text-decoration: none;
+  /* Quitar subrayado de enlace */
+  text-align: center;
+  /* Centrado de texto */
 }
 
 .button:hover {
-  background-color: #0056b3; /* Cambio de color al pasar el ratón */
+  background-color: #0056b3;
+  /* Cambio de color al pasar el ratón */
 }

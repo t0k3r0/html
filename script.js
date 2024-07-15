@@ -215,6 +215,32 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error al marcar la tarea como completada:", error);
     }
   }
+  async function updateTaskOrder(newOrder, oldIndex, newIndex) {
+    try {
+      oldIndex++;
+      newIndex++;
+      const response = await fetch(
+        "http://192.168.1.14/calendar_operations.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "reorder_tasks",
+            newOrder,
+            oldIndex,
+            newIndex,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Error al actualizar el orden de las tareas.");
+      }
+    } catch (error) {
+      console.error("Error en updateTaskOrder:", error);
+    }
+  }
   async function generateMonthDays(month, year) {
     daysContainer.innerHTML = "";
     const firstDay = new Date(year, month, 1);
@@ -234,16 +260,20 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           const dayElement = document.createElement("div");
           dayElement.classList.add("day");
-          dayElement.textContent = dayOfMonth;
-          const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-            dayOfMonth
-          ).padStart(2, "0")}`;
+          
+          const dayNumber = document.createElement("span");
+          dayNumber.textContent = dayOfMonth;
+          dayElement.appendChild(dayNumber);
+  
+          const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(dayOfMonth).padStart(2, "0")}`;
           const notes = await fetchNotesForDate(date);
           const notesCount = notes.length;
-          const notesButton = document.createElement("button");
-          notesButton.classList.add("notes-button");
-          notesButton.textContent = notesCount;
-          dayElement.appendChild(notesButton);
+          if (notesCount > 0) {
+            const notesButton = document.createElement("button");
+            notesButton.classList.add("notes-button");
+            notesButton.textContent = notesCount;
+            dayElement.appendChild(notesButton);
+          }
           dayElement.addEventListener("click", async function (e) {
             e.stopPropagation();
             selectedDate = date;
@@ -252,11 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
             displayDayNotes(date);
             popupOverlay.classList.add("visible");
           });
-          if (
-            year === today.getFullYear() &&
-            month === today.getMonth() &&
-            dayOfMonth === today.getDate()
-          ) {
+          if (year === today.getFullYear() && month === today.getMonth() && dayOfMonth === today.getDate()) {
             dayElement.classList.add("today");
           }
           daysContainer.appendChild(dayElement);
@@ -265,6 +291,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   }
+  
+
   async function displayDayNotes(date) {
     const notesList = document.getElementById("notes-ul");
     notesList.innerHTML = "";
@@ -523,32 +551,7 @@ document.addEventListener("DOMContentLoaded", function () {
       $("#sortable").disableSelection();
     });
   }
-  async function updateTaskOrder(newOrder, oldIndex, newIndex) {
-    try {
-      oldIndex++;
-      newIndex++;
-      const response = await fetch(
-        "http://192.168.1.14/calendar_operations.php",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            action: "reorder_tasks",
-            newOrder,
-            oldIndex,
-            newIndex,
-          }),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Error al actualizar el orden de las tareas.");
-      }
-    } catch (error) {
-      console.error("Error en updateTaskOrder:", error);
-    }
-  }
+
   async function loadAllPendingTasks() {
     tareasPendientes = [];
     const tasks = await fetchTasks();
