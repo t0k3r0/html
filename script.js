@@ -1,15 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // const columna1 = document.getElementById("left-column");
-  // const columna2 = document.getElementById("right-column");
-  // function copiarEstilos(sourceElement, targetElement) {
-  //   const styles = window.getComputedStyle(sourceElement);
-  //   for (let style of styles) {
-  //     targetElement.style[style] = styles.getPropertyValue(style);
-  //   }
-  // }
-
-
-  // copiarEstilos(columna1, columna2);
   const weekdays = ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"];
   const daysContainer = document.getElementById("days-container");
   const monthYearElement = document.getElementById("month-year");
@@ -146,10 +135,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!response.ok) {
         throw new Error("Error al guardar la tarea.");
       }
-      const data = await response.json();
-      if (data.status !== "success") {
-        throw new Error(data.error || "Error desconocido");
-      }
+      // const data = await response.json();
+      // if (data.status !== "success") {
+      //   throw new Error(data.error || "Error desconocido");
+      // }
     } catch (error) {
       console.error("Error en saveTask:", error);
     }
@@ -496,9 +485,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   function createMoreInfoDiv(task, moreInfoDivId) {
     const moreInfoDiv = document.createElement("div");
-    moreInfoDiv.textContent = task.moreInfo;
+    // moreInfoDiv.textContent = task.moreInfo;
     moreInfoDiv.id = moreInfoDivId;
     moreInfoDiv.style.display = "block";
+    moreInfoDiv.style.whiteSpace = "pre-line"; // Para mantener los saltos de línea
+
+    // Reemplazar saltos de línea con etiquetas <br> para HTML
+    const htmlContent = task.moreInfo.replace(/\n/g, "<br>");
+    moreInfoDiv.innerHTML = htmlContent;
     return moreInfoDiv;
   }
   function displayEditField(task, li, editCampoMoreInfoId, saveButtonId) {
@@ -530,7 +524,10 @@ document.addEventListener("DOMContentLoaded", function () {
     saveButton.addEventListener("click", async () => {
       task.moreInfo = editCampoMoreInfo.value;
       const updatedMoreInfoDiv = document.createElement("div");
-      updatedMoreInfoDiv.textContent = task.moreInfo;
+      updatedMoreInfoDiv.style.whiteSpace = "pre-line"; // Para mantener los saltos de línea
+      // Reemplazar saltos de línea con etiquetas <br> para HTML
+      const htmlContent = task.moreInfo.replace(/\n/g, "<br>");
+      updatedMoreInfoDiv.innerHTML = htmlContent;
       updatedMoreInfoDiv.id = "moreInfo_" + task.id;
       updatedMoreInfoDiv.style.display = "block";
       const existingMoreInfoDiv = document.getElementById(
