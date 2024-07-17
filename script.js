@@ -1,4 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // const columna1 = document.getElementById("left-column");
+  // const columna2 = document.getElementById("right-column");
+  // function copiarEstilos(sourceElement, targetElement) {
+  //   const styles = window.getComputedStyle(sourceElement);
+  //   for (let style of styles) {
+  //     targetElement.style[style] = styles.getPropertyValue(style);
+  //   }
+  // }
+
+
+  // copiarEstilos(columna1, columna2);
   const weekdays = ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"];
   const daysContainer = document.getElementById("days-container");
   const monthYearElement = document.getElementById("month-year");
@@ -15,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const saveTaskButton = document.getElementById("save-task");
   const cancelTaskButton = document.getElementById("cancel-task");
   const sortableList = document.getElementById("sortable");
-  const proximasContainer = document.getElementById("proximas");
+  const proximosContainer = document.getElementById("proximos");
   let selectedDate = "";
   let tasks = {};
   let tareasPendientes = [];
@@ -260,12 +271,14 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           const dayElement = document.createElement("div");
           dayElement.classList.add("day");
-          
+
           const dayNumber = document.createElement("span");
           dayNumber.textContent = dayOfMonth;
           dayElement.appendChild(dayNumber);
-  
-          const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(dayOfMonth).padStart(2, "0")}`;
+
+          const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+            dayOfMonth
+          ).padStart(2, "0")}`;
           const notes = await fetchNotesForDate(date);
           const notesCount = notes.length;
           if (notesCount > 0) {
@@ -282,7 +295,11 @@ document.addEventListener("DOMContentLoaded", function () {
             displayDayNotes(date);
             popupOverlay.classList.add("visible");
           });
-          if (year === today.getFullYear() && month === today.getMonth() && dayOfMonth === today.getDate()) {
+          if (
+            year === today.getFullYear() &&
+            month === today.getMonth() &&
+            dayOfMonth === today.getDate()
+          ) {
             dayElement.classList.add("today");
           }
           daysContainer.appendChild(dayElement);
@@ -291,7 +308,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   }
-  
 
   async function displayDayNotes(date) {
     const notesList = document.getElementById("notes-ul");
@@ -385,21 +401,24 @@ document.addEventListener("DOMContentLoaded", function () {
     updatePendingTasks();
   });
   function updatePendingTasks() {
-    pendingTasksContainer.innerHTML = "";
+    // pendingTasksContainer.innerHTML = "";
+    sortableList.innerHTML = "";
     const sortedTasks = [...tareasPendientes].sort(
       (a, b) => a.position - b.position
     );
     const currentTime = new Date();
-    sortedTasks.forEach((task) => {
+    sortedTasks.forEach(async (task) => {
       const li = createTaskElement(task);
-      if (task.completed) {
+      if (task.completed == 1) {
+        li.style.backgroundColor = "#d4edda";
+      } else if (task.completed == 2) {
         const completionTime = new Date(task.completedAt);
         const hoursSinceCompletion =
           (currentTime - completionTime) / (1000 * 60 * 60);
-        if (hoursSinceCompletion < 24) {
-          li.style.backgroundColor = "#d4edda";
+        if (hoursSinceCompletion < 1) {
+          li.style.backgroundColor = "grey";
         } else {
-          return;
+          await deleteTask(task.id);
         }
       }
       sortableList.appendChild(li);
@@ -462,10 +481,13 @@ document.addEventListener("DOMContentLoaded", function () {
     completeSpan.id = "completeSpan_" + task.id;
     completeSpan.addEventListener("click", async () => {
       if (!task.completed) {
-        task.completed = true;
+        task.completed = 1;
         li.style.backgroundColor = "#d4edda";
+      } else if (task.completed == 1) {
+        task.completed = 2;
+        li.style.backgroundColor = "grey";
       } else {
-        task.completed = false;
+        task.completed = 0;
         li.style.backgroundColor = "";
       }
       await markTaskAsCompleted(task.id);
@@ -576,6 +598,7 @@ document.addEventListener("DOMContentLoaded", function () {
       currentMonth
     )} ${currentYear}`;
     await loadAllPendingTasks();
+    await updateNextEvents();
   }
   initialize();
   document.getElementById("prev-month").addEventListener("click", function () {
@@ -600,6 +623,50 @@ document.addEventListener("DOMContentLoaded", function () {
       currentYear++;
     }
     initialize();
+  }
+  async function updateNextEvents() {
+    proximosContainer.innerHTML = "";
+    const allNotes = [];
+
+    // Fetch all tasks for the current month and year
+    for (
+      let day = 1;
+      day <= new Date(currentYear, currentMonth + 1, 0).getDate();
+      day++
+    ) {
+      const date = `${currentYear}-${String(currentMonth + 1).padStart(
+        2,
+        "0"
+      )}-${String(day).padStart(2, "0")}`;
+      const notes = await fetchNotesForDate(date);
+      allNotes.push(...notes.map((note) => ({ ...note, date })));
+    }
+
+    // Sort notes by date and hour
+    allNotes.sort((a, b) => {
+      const dateComparison = new Date(a.date) - new Date(b.date);
+      if (dateComparison !== 0) return dateComparison;
+      return a.hora.localeCompare(b.hora);
+    });
+
+    // Display up to 5 upcoming events
+    const upcomingNotes = allNotes.slice(0, 5);
+    upcomingNotes.forEach((note) => {
+      const eventItem = document.createElement("div");
+      eventItem.classList.add("proximo-evento");
+
+      const eventDateTime = document.createElement("div");
+      eventDateTime.classList.add("event-date-time");
+      eventDateTime.textContent = `${note.date} ${note.hora}`;
+
+      const eventText = document.createElement("div");
+      eventText.classList.add("event-text");
+      eventText.textContent = note.texto;
+
+      eventItem.appendChild(eventDateTime);
+      eventItem.appendChild(eventText);
+      proximosContainer.appendChild(eventItem);
+    });
   }
   async function updateCalendar() {
     await generateMonthDays(currentMonth, currentYear);

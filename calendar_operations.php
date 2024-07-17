@@ -157,15 +157,18 @@ function markTaskAsCompleted($taskId)
         if ($task) {
             $completada = $task['completada'];
 
-            if ($completada) {
+            if ($completada == 2) {
                 // Si está completada, marcarla como no completada y eliminar la fecha de completado
                 $stmt = $conn->prepare("UPDATE tareas_pendientes SET completada = 0, fecha_completado = NULL WHERE id = ?");
                 $stmt->bind_param("i", $taskId);
-            } else {
+            } else if ($completada == 1) {
                 // Si no está completada, marcarla como completada y agregar la fecha de completado
                 $fecha_completado = date('Y-m-d H:i:s');
-                $stmt = $conn->prepare("UPDATE tareas_pendientes SET completada = 1, fecha_completado = ? WHERE id = ?");
+                $stmt = $conn->prepare("UPDATE tareas_pendientes SET completada = 2, fecha_completado = ? WHERE id = ?");
                 $stmt->bind_param("si", $fecha_completado, $taskId);
+            } else {
+                $stmt = $conn->prepare("UPDATE tareas_pendientes SET completada = 1 WHERE id = ?");
+                $stmt->bind_param("i", $taskId);
             }
 
             if ($stmt->execute()) {
@@ -190,37 +193,6 @@ function markTaskAsCompleted($taskId)
 }
 
 
-function deleteCompletedTasks()
-{
-    global $conn;
-
-    // Iniciar una transacción
-    $conn->begin_transaction();
-
-    try {
-        // Calcular la fecha y hora de hace 24 horas
-        $fecha_limite = date('Y-m-d H:i:s', strtotime('-24 hours'));
-
-        // Preparar y ejecutar la consulta DELETE
-        $stmt = $conn->prepare("DELETE FROM tareas_pendientes WHERE completada = 1 AND fecha_completado <= ?");
-        $stmt->bind_param("s", $fecha_limite);
-
-        if ($stmt->execute()) {
-            // Confirmar la transacción
-            $conn->commit();
-            echo json_encode(['success' => 'Tareas completadas eliminadas con éxito']);
-        } else {
-            // Revertir la transacción en caso de error
-            $conn->rollback();
-            echo json_encode(['error' => 'Error al eliminar las tareas completadas']);
-        }
-    } catch (Exception $e) {
-        // Revertir la transacción en caso de excepción
-        $conn->rollback();
-        echo json_encode(['error' => 'Error al procesar la solicitud']);
-    }
-}
-
 
 
 
@@ -232,6 +204,18 @@ function deleteTask($taskId)
     $conn->begin_transaction();
 
     try {
+
+        $result = $conn->query("SELECT * FROM tareas_pendientes WHERE id = $taskId");
+        $task = $result->fetch_assoc();
+
+        if (!$task) {
+            throw new Exception("Tarea no encontrada");
+        }
+
+        // Insertar los datos de la tarea en tareas_pendientes_eliminadas
+        $stmt = $conn->prepare("INSERT INTO tareas_pendientes_eliminadas (id, texto, mas_info, completada, posicion, fecha_completado) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isssis", $task['id'], $task['texto'], $task['mas_info'], $task['completada'], $task['posicion'], $task['fecha_completado']);
+        $stmt->execute();
         // Obtener la posición de la tarea que va a ser eliminada y guardarla en la variable @posicion
         $conn->query("SET @posicion := (SELECT posicion FROM tareas_pendientes WHERE id = $taskId)");
 

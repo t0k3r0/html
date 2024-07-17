@@ -5,26 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Calendario Mensual</title>
     <link rel="stylesheet" href="./css/styles.css" />
-    <link rel="stylesheet" href="./css/ui.css" />
+    <link rel="stylesheet" href="./css/normalize.css" />
+    <!-- <link rel="stylesheet" href="./css/ui.css" /> -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.js"></script> -->
     <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
   </head>
-
   <body>
     <div id="calendar">
       <h2 class="container">
         <div class="column">
-          <button id="prev-year" class="btn">AÑO -1</button>
-          <button id="prev-month" class="btn">MES -1</button>
+          <button id="prev-year" class="btn">-AÑO</button>
+          <button id="prev-month" class="btn">-MES</button>
         </div>
         <div class="column">
           <div id="month-year"></div>
         </div>
         <div class="column">
-          <button id="next-year" class="btn">AÑO +1</button>
-          <button id="next-month" class="btn">MES +1</button>
+          <button id="next-year" class="btn">+AÑO</button>
+          <button id="next-month" class="btn">+MES</button>
         </div>
       </h2>
       <div class="days-grid" id="days-container"></div>
@@ -53,23 +53,28 @@
         </div>
       </div>
     </div>
-    <h3 class="title">Tareas pendientes</h3>
-    <div id="pendientes"></div>
-    <ul id="sortable" class="task-list"></ul>
-
-    <button id="add-task" class="btn">Agregar Tarea</button>
-    <div id="task-input-overlay" class="hidden">
-      <div id="task-input-popup">
-        <label for="task-text">Título de la tarea:</label>
-        <input type="text" id="task-text" />
-        <button id="save-task" class="button">Guardar Tarea</button>
-        <button id="cancel-task" class="button">Cancelar</button>
+    <div id="contenedor-columnas" class="column-container">
+      <div class="left-column">
+        <!-- <h3 class="title">Tareas pendientes</h3> -->
+        <div id="pendientes"></div>
+        <ul id="sortable" class="task-list"></ul>
+        <button id="add-task" class="btn">Agregar Tarea</button>
+        <div id="task-input-overlay" class="hidden">
+          <div id="task-input-popup">
+            <label for="task-text">Título de la tarea:</label>
+            <input type="text" id="task-text" />
+            <button id="save-task" class="button">Guardar Tarea</button>
+            <button id="cancel-task" class="button">Cancelar</button>
+          </div>
+        </div>
+      </div>
+      <div class="right-column">
+        <!-- <h3 class="title">Próximos eventos</h3> -->
+        <div id="proximos"></div>
+        <!-- <h3 class="title">Últimos eventos</h3> -->
+        <div id="ultimos"></div>
       </div>
     </div>
-    <h3 class="title">Próximas tareas</h3>
-    <div id="proximas"></div>
-    <h3 class="title">Últimas tareas</h3>
-    <div id="ultimas"></div>
     <script src="script.js"></script>
   </body>
 </html>
