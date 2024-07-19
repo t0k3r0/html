@@ -3,6 +3,7 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f0f0f0;
   /* padding: 20px; */
+  /* max-width: 600px; */
 }
 
 #calendar {
@@ -10,7 +11,7 @@ body {
   /* margin: 0 auto; */
   background-color: #fff;
   border-radius: 8px;
-  /* padding: 20px; */
+  padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -24,9 +25,12 @@ body {
 #days-container {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
+  gap: 2px;
   width: 100%;
   max-width: 100%;
+  margin: 0 auto;
+  justify-content: center; 
+
 }
 
 .day-number {
@@ -57,19 +61,22 @@ body {
 }
 
 .day {
+  aspect-ratio: 1;
   display: flex;
   position: relative;
   align-items: center;
   justify-content: center;
   text-align: center;
   font-size: 2em;
-  height: 50px;
+  margin: 5px;
+  /* height: 50px; */
   /* width: 100%; */
-  max-width: 100%;
+  /* max-width: 50px;
+  max-height: 50px; */
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 6px;
-  /* padding: 5px; */
+  padding: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   word-break: break-word;
@@ -79,8 +86,8 @@ body {
   font-size: clamp(
     14px,
     5vw,
-    36px
-  ); /* Ajusta el tamaño mínimo, preferido y máximo aquí */ /* Ajusta el tamaño del número aquí */
+    100px
+  );
   line-height: 1.15;
 }
 
@@ -94,8 +101,8 @@ body {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 25%;
+  height: 25%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,12 +153,12 @@ body {
 .notes-popup {
   background-color: #fff;
   border-radius: 8px;
-  /* padding: 20px; */
+  padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.3s ease;
   max-width: 400px;
   width: 100%;
-  /* margin: 0 auto; */
+  margin: 0 auto;
 }
 
 @keyframes fadeIn {
@@ -307,9 +314,9 @@ body {
   flex: 1;
 }
 
-.task-item .actions {
-  /* margin-left: 10px; */
-}
+/* .task-item .actions {
+  margin-left: 10px;
+} */
 
 .task-item button {
   background-color: #ff4c4c;
@@ -325,9 +332,9 @@ body {
   background-color: #ff1c1c;
 }
 
-.task-list li:not(:last-child) {
-  /* margin-bottom: 10px; */
-}
+/* .task-list li:not(:last-child) {
+  margin-bottom: 10px;
+} */
 
 .more-info-span {
   /* margin-left: 10px; */
@@ -400,10 +407,10 @@ body {
 }
 
 /* Estilos para la lista de tareas pendientes */
-#sortable {
-  /* padding: 0px;
-  margin: 0px; */
-}
+/* #sortable {
+  padding: 0px;
+  margin: 0px;
+} */
 
 .sortable-item {
   /* margin-bottom: 10px;
@@ -445,10 +452,10 @@ body {
   padding: 0;
   width: 100%;
 }
-.proximos {
-  /* margin: 0; */
-  /* padding: 20px; */
-}
+/* .proximos {
+  margin: 0;
+  padding: 20px;
+} */
 #sortable li {
   margin: 6px;
   padding: 16px;
@@ -463,28 +470,28 @@ body {
 
 /* Media Queries para dispositivos móviles */
 @media (max-width: 100%) {
-  #calendar {
-    /* padding: 10px; */
-  }
+  /* #calendar {
+    padding: 10px;
+  } */
 
   .days-grid {
     grid-template-columns: repeat(7, 1fr);
     /* Ajusta el número de columnas en móviles */
     gap: 5px;
   }
-
+/* 
   .day {
-    /* padding: 10px; */
-  }
+    padding: 10px;
+  } */
 
   #month-year {
     font-size: 1.2rem;
     /* margin-bottom: 10px; */
   }
 
-  .popup-content {
-    /* padding: 10px; */
-  }
+  /* .popup-content {
+    padding: 10px;
+  } */
 
   .popup-content input[type="number"] {
     /* padding: 8px; */
@@ -507,20 +514,20 @@ body {
     align-items: flex-start;
   }
 
-  .task-item .actions {
-    /* margin-left: 0; */
-    /* margin-top: 10px; */
-  }
+  /* .task-item .actions {
+    margin-left: 0;
+    margin-top: 10px;
+  } */
 
   .sortable-item {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .sortable-item button {
-    /* margin-left: 0; */
-    /* margin-top: 10px; */
-  }
+  /* .sortable-item button {
+    margin-left: 0;
+    margin-top: 10px;
+  } */
 }
 
 /* Estilos para el botón */
@@ -630,9 +637,9 @@ body {
 .right-column {
   margin: 0;
 } */
-.title {
-  /* margin-bottom: 10px; */
-}
+/* .title {
+  margin-bottom: 10px;
+} */
 
 #task-input-popup {
   background: #fff;
@@ -651,7 +658,7 @@ html .ui-button.ui-state-disabled:hover,
 html .ui-button.ui-state-disabled:active {
   border: 1px solid #c5c5c5;
   background: #f6f6f6;
-  font-weight: normalaa;
+  font-weight: normal;
   color: #000000ee;
   /* max-width: 48%; */
   /* margin: 0 auto;  */
