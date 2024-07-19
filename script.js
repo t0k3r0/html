@@ -135,10 +135,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!response.ok) {
         throw new Error("Error al guardar la tarea.");
       }
-      // const data = await response.json();
-      // if (data.status !== "success") {
-      //   throw new Error(data.error || "Error desconocido");
-      // }
+      const data = await response.json();
+      if (data.status !== "success") {
+        throw new Error(data.error || "Error desconocido");
+      }
     } catch (error) {
       console.error("Error en saveTask:", error);
     }
@@ -431,37 +431,59 @@ document.addEventListener("DOMContentLoaded", function () {
     moreInfoSpan.classList.add("more-info-span");
     moreInfoSpan.style.cursor = "pointer";
     moreInfoSpan.id = "moreInfoSpan_" + task.id;
+    
     moreInfoSpan.addEventListener("click", () => {
-      const moreInfoDivId = "moreInfo_" + task.id;
-      const editCampoMoreInfoId = "editCampo_" + task.id;
-      const saveButtonId = "saveButton_" + task.id;
-      const editMoreInfoLinkId = "editMoreInfoLink_" + task.id;
-      const moreInfoDiv = document.getElementById(moreInfoDivId);
-      const editMoreInfoLink = document.getElementById(editMoreInfoLinkId);
-      if (moreInfoDiv) {
-        li.removeChild(moreInfoDiv);
-      }
-      if (editMoreInfoLink) {
-        li.removeChild(editMoreInfoLink);
-      }
-      removeEditField(li, editCampoMoreInfoId, saveButtonId);
-      const newMoreInfoDiv = createMoreInfoDiv(task, moreInfoDivId);
-      li.appendChild(newMoreInfoDiv);
-      const newEditMoreInfoLink = document.createElement("span");
-      newEditMoreInfoLink.textContent = "editar";
-      newEditMoreInfoLink.classList.add("edit-more-info-span");
-      newEditMoreInfoLink.style.cursor = "pointer";
-      newEditMoreInfoLink.id = editMoreInfoLinkId;
-      newEditMoreInfoLink.addEventListener("click", () => {
-        displayEditField(task, li, editCampoMoreInfoId, saveButtonId);
-        if (li.contains(newEditMoreInfoLink)) {
-          li.removeChild(newEditMoreInfoLink);
+        const moreInfoDivId = "moreInfo_" + task.id;
+        const editCampoMoreInfoId = "editCampo_" + task.id;
+        const saveButtonId = "saveButton_" + task.id;
+        const editMoreInfoLinkId = "editMoreInfoLink_" + task.id;
+        const moreInfoDiv = document.getElementById(moreInfoDivId);
+        const editMoreInfoLink = document.getElementById(editMoreInfoLinkId);
+
+        removeEditField(li, editCampoMoreInfoId, saveButtonId);
+        
+        if (li.contains(moreInfoDiv)) {
+            li.removeChild(moreInfoDiv);
+            if (li.contains(editMoreInfoLink)) {
+                li.removeChild(editMoreInfoLink);
+            }
+        } else {
+            const newMoreInfoDiv = createMoreInfoDiv(task, moreInfoDivId);
+            li.appendChild(newMoreInfoDiv);
+            
+            if (!li.contains(editMoreInfoLink)) {
+                const newEditMoreInfoLink = document.createElement("span");
+
+                newEditMoreInfoLink.textContent = "editar";
+                newEditMoreInfoLink.classList.add("edit-more-info-span");
+                newEditMoreInfoLink.style.cursor = "pointer";
+                newEditMoreInfoLink.id = editMoreInfoLinkId;
+
+                newEditMoreInfoLink.addEventListener("click", () => {
+                    displayEditField(
+                        task,
+                        li,
+                        editCampoMoreInfoId,
+                        saveButtonId,
+                        newEditMoreInfoLink
+                    );
+
+                    if (li.contains(newEditMoreInfoLink)) {
+                        li.removeChild(newEditMoreInfoLink);
+                    } else {
+                        li.appendChild(newEditMoreInfoLink);
+                    }
+                });
+
+                li.appendChild(newEditMoreInfoLink);
+            }
         }
-      });
-      li.appendChild(newEditMoreInfoLink);
     });
+
     return moreInfoSpan;
-  }
+}
+
+
   function createCompleteSpan(task, li) {
     const completeSpan = document.createElement("span");
     completeSpan.textContent = " ✔ ";
@@ -495,7 +517,13 @@ document.addEventListener("DOMContentLoaded", function () {
     moreInfoDiv.innerHTML = htmlContent;
     return moreInfoDiv;
   }
-  function displayEditField(task, li, editCampoMoreInfoId, saveButtonId) {
+  function displayEditField(
+    task,
+    li,
+    editCampoMoreInfoId,
+    saveButtonId,
+    newEditMoreInfoLink
+  ) {
     const moreInfoDiv = document.getElementById("moreInfo_" + task.id);
     if (moreInfoDiv && li.contains(moreInfoDiv)) {
       li.removeChild(moreInfoDiv);
@@ -503,20 +531,29 @@ document.addEventListener("DOMContentLoaded", function () {
     const editCampoMoreInfo = document.createElement("textarea");
     editCampoMoreInfo.value = task.moreInfo;
     editCampoMoreInfo.id = editCampoMoreInfoId;
-    editCampoMoreInfo.style.width = "100%";
-    editCampoMoreInfo.style.height = "100px";
+    editCampoMoreInfo.style.width = "80%";
+    // editCampoMoreInfo.style.height = "100px";
     editCampoMoreInfo.style.display = "block";
+    editCampoMoreInfo.rows = "10";
+
     li.appendChild(editCampoMoreInfo);
     const saveButton = createSaveButton(
       task,
       li,
       editCampoMoreInfo,
-      saveButtonId
+      saveButtonId,
+      newEditMoreInfoLink
     );
     li.appendChild(saveButton);
   }
 
-  function createSaveButton(task, li, editCampoMoreInfo, saveButtonId) {
+  function createSaveButton(
+    task,
+    li,
+    editCampoMoreInfo,
+    saveButtonId,
+    newEditMoreInfoLink
+  ) {
     const saveButton = document.createElement("button");
     saveButton.textContent = "Guardar";
     saveButton.id = saveButtonId;
@@ -537,6 +574,7 @@ document.addEventListener("DOMContentLoaded", function () {
         li.replaceChild(updatedMoreInfoDiv, existingMoreInfoDiv);
       } else {
         li.appendChild(updatedMoreInfoDiv);
+        li.appendChild(newEditMoreInfoLink);
       }
       removeEditField(li, editCampoMoreInfo.id, saveButton.id);
       // await saveNotesForDate("tareasPendientes", tareasPendientes);

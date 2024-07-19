@@ -81,7 +81,7 @@ body {
     5vw,
     36px
   ); /* Ajusta el tamaño mínimo, preferido y máximo aquí */ /* Ajusta el tamaño del número aquí */
-  line-height: 1;
+  line-height: 1.15;
 }
 
 .notes-button {
@@ -325,8 +325,6 @@ body {
   background-color: #ff1c1c;
 }
 
-
-
 .task-list li:not(:last-child) {
   /* margin-bottom: 10px; */
 }
@@ -369,9 +367,10 @@ body {
 }
 
 .edit-more-info textarea {
-  width: 100%;
+  max-width: fit-content;
+  width: 80%;
   height: 80px;
-  /* padding: 10px; */
+  padding: 10px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -402,8 +401,8 @@ body {
 
 /* Estilos para la lista de tareas pendientes */
 #sortable {
-  padding: 0px;
-  margin: 0px;
+  /* padding: 0px;
+  margin: 0px; */
 }
 
 .sortable-item {
@@ -442,8 +441,8 @@ body {
 
 #sortable {
   list-style-type: none;
-  /* margin: 0 auto;
-  padding: 0; */
+  margin: 0 auto;
+  padding: 0;
   width: 100%;
 }
 .proximos {
@@ -451,8 +450,8 @@ body {
   /* padding: 20px; */
 }
 #sortable li {
-  /* margin: 10px;
-  padding: 20px; */
+  margin: 6px;
+  padding: 16px;
   /* padding-left: 1.5em; */
   font-size: 16px;
   /* height: 1.5em; */
@@ -512,8 +511,6 @@ body {
     /* margin-left: 0; */
     /* margin-top: 10px; */
   }
-
-
 
   .sortable-item {
     flex-direction: column;
@@ -596,8 +593,8 @@ body {
   /* Cambio de color al pasar el ratón */
 }
 .proximo-evento {
-  /* padding: 10px;
-  margin: 5px 0; */
+  margin: 6px;
+  padding: 16px;
   border: 1px solid #ddd;
   border-radius: 5px;
   background-color: #f9f9f9;
@@ -636,8 +633,6 @@ body {
 .title {
   /* margin-bottom: 10px; */
 }
-
-
 
 #task-input-popup {
   background: #fff;
