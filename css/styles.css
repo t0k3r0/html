@@ -29,8 +29,7 @@ body {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  justify-content: center; 
-
+  justify-content: center;
 }
 
 .day-number {
@@ -60,14 +59,16 @@ body {
   gap: 10px;
 }
 
-.day {
+.weekday,
+.day,
+.empty {
   aspect-ratio: 1;
   display: flex;
   position: relative;
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: 2em;
+  font-size: 1rem;
   margin: 5px;
   /* height: 50px; */
   /* width: 100%; */
@@ -76,28 +77,39 @@ body {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 6px;
+  box-sizing: border-box;
   padding: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   word-break: break-word;
 }
-
+.weekday {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
+.day {
+  background-color: #ffffff;
+}
+.empty {
+  background-color: #f9f9f9;
+}
+.day.today {
+  background-color: #f0f8ff;
+  border: 1px solid #007bff;
+  font-weight: bold;
+}
 .day span {
-  font-size: clamp(
-    14px,
-    5vw,
-    100px
-  );
+  font-size: clamp(14px, 5vw, 100px);
   line-height: 1.15;
 }
 
 .notes-button {
   position: absolute;
-  display: block;
+  /* display: block; */
   /* margin-top: 5px; */
   top: 5px;
   right: 5px;
-  background-color: red;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 50%;
@@ -107,6 +119,8 @@ body {
   align-items: center;
   justify-content: center;
   /* padding: 5px 10px; */
+  /* padding: 5px;
+  margin-left: 5px; */
   font-size: 0.9rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -479,7 +493,7 @@ body {
     /* Ajusta el número de columnas en móviles */
     gap: 5px;
   }
-/* 
+  /* 
   .day {
     padding: 10px;
   } */
@@ -610,7 +624,7 @@ body {
   flex-direction: column;
 }
 
-.proximo-evento .event-date-time {
+.proximo-evento .event-date-text {
   font-weight: bold;
   color: #333;
 }

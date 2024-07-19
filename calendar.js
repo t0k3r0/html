@@ -3,7 +3,6 @@ import {
   saveNotesForDate,
   deleteNoteForDate,
 } from "./db_connections.js";
-
 document.addEventListener("DOMContentLoaded", function () {
   const weekdays = ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"];
   const daysContainer = document.getElementById("days-container");
@@ -14,17 +13,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const popupOverlay = document.getElementById("popup-overlay");
   const closePopupButton = document.getElementById("close-popup");
   const saveTimeButton = document.getElementById("save-time");
-//   const pendingTasksContainer = document.getElementById("pendientes");
-//   const taskInputOverlay = document.getElementById("task-input-overlay");
-//   const taskTextInput = document.getElementById("task-text");
-//   const addTaskButton = document.getElementById("add-task");
-//   const saveTaskButton = document.getElementById("save-task");
-//   const cancelTaskButton = document.getElementById("cancel-task");
-//   const sortableList = document.getElementById("sortable");
+  //   const pendingTasksContainer = document.getElementById("pendientes");
+  //   const taskInputOverlay = document.getElementById("task-input-overlay");
+  //   const taskTextInput = document.getElementById("task-text");
+  //   const addTaskButton = document.getElementById("add-task");
+  //   const saveTaskButton = document.getElementById("save-task");
+  //   const cancelTaskButton = document.getElementById("cancel-task");
+  //   const sortableList = document.getElementById("sortable");
   const proximosContainer = document.getElementById("proximos");
   let selectedDate = "";
-//   let tasks = {};
-//   let tareasPendientes = [];
+  //   let tasks = {};
+  //   let tareasPendientes = [];
   function getMonthName(monthIndex) {
     const months = [
       "Enero",
@@ -44,10 +43,19 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   async function generateMonthDays(month, year) {
     daysContainer.innerHTML = "";
+    // Añadir los días de la semana
+    weekdays.forEach((day) => {
+      const weekdayElement = document.createElement("div");
+      weekdayElement.classList.add("weekday");
+      weekdayElement.textContent = day;
+      daysContainer.appendChild(weekdayElement);
+    });
+    // Calcular el primer día del mes
     const firstDay = new Date(year, month, 1);
-    const startingDay = firstDay.getDay();
+    const startingDay = (firstDay.getDay() + 6) % 7; // Convertir el primer día al formato de lunes a domingo
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     let dayOfMonth = 1;
+    // Generar los días del mes
     for (let i = 0; i < 6; i++) {
       for (let j = 0; j < 7; j++) {
         if (i === 0 && j < startingDay) {
@@ -61,11 +69,9 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           const dayElement = document.createElement("div");
           dayElement.classList.add("day");
-
           const dayNumber = document.createElement("span");
           dayNumber.textContent = dayOfMonth;
           dayElement.appendChild(dayNumber);
-
           const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(
             dayOfMonth
           ).padStart(2, "0")}`;
@@ -98,7 +104,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   }
-
   async function displayDayNotes(date) {
     const notesList = document.getElementById("notes-ul");
     notesList.innerHTML = "";
@@ -192,47 +197,64 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   async function updateNextEvents() {
     proximosContainer.innerHTML = "";
-    const allNotes = [];
-
-    // Fetch all tasks for the current month and year
-    for (
-      let day = 1;
-      day <= new Date(currentYear, currentMonth + 1, 0).getDate();
-      day++
-    ) {
-      const date = `${currentYear}-${String(currentMonth + 1).padStart(
-        2,
-        "0"
-      )}-${String(day).padStart(2, "0")}`;
-      const notes = await fetchNotesForDate(date);
-      allNotes.push(...notes.map((note) => ({ ...note, date })));
+    const today = new Date();
+    const mañana = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 1
+    );
+    const pasadoMañana = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 2
+    );
+    const datesToCheck = [today, mañana, pasadoMañana];
+    for (const date of datesToCheck) {
+      const formattedDate = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      const notes = await fetchNotesForDate(formattedDate);
+      notes.forEach((note) => {
+        const noteTime = new Date(`${formattedDate}T${note.hora}`);
+        const currentTime = new Date();
+        // Check if the note time is in the future
+        if (noteTime > currentTime) {
+          const eventItem = document.createElement("div");
+          eventItem.classList.add("proximo-evento");
+          const eventDateTime = document.createElement("div");
+          eventDateTime.classList.add("event-date-text");
+          const hoyFormateado = `${today.getFullYear()}-${String(
+            today.getMonth() + 1
+          ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+          const mañanaFormateado = `${mañana.getFullYear()}-${String(
+            mañana.getMonth() + 1
+          ).padStart(2, "0")}-${String(mañana.getDate()).padStart(2, "0")}`;
+          const pasadoMañanaFormateado = `${pasadoMañana.getFullYear()}-${String(
+            pasadoMañana.getMonth() + 1
+          ).padStart(2, "0")}-${String(pasadoMañana.getDate()).padStart(
+            2,
+            "0"
+          )}`;
+          let fechaTexto = "";
+          if (formattedDate === hoyFormateado) {
+            fechaTexto = "Hoy";
+          } else if (formattedDate === mañanaFormateado) {
+            fechaTexto = "Mañana";
+          } else if (formattedDate === pasadoMañanaFormateado) {
+            fechaTexto = "Pasado Mañana";
+          }
+          // Display time without seconds
+          const noteHoraSinSegundos = note.hora.slice(0, 5);
+          eventDateTime.textContent = `${fechaTexto} ${noteHoraSinSegundos}`;
+          const eventText = document.createElement("div");
+          eventText.classList.add("event-text");
+          eventText.textContent = note.texto;
+          eventItem.appendChild(eventDateTime);
+          eventItem.appendChild(eventText);
+          proximosContainer.appendChild(eventItem);
+        }
+      });
     }
-
-    // Sort notes by date and hour
-    allNotes.sort((a, b) => {
-      const dateComparison = new Date(a.date) - new Date(b.date);
-      if (dateComparison !== 0) return dateComparison;
-      return a.hora.localeCompare(b.hora);
-    });
-
-    // Display up to 5 upcoming events
-    const upcomingNotes = allNotes.slice(0, 5);
-    upcomingNotes.forEach((note) => {
-      const eventItem = document.createElement("div");
-      eventItem.classList.add("proximo-evento");
-
-      const eventDateTime = document.createElement("div");
-      eventDateTime.classList.add("event-date-time");
-      eventDateTime.textContent = `${note.date} ${note.hora}`;
-
-      const eventText = document.createElement("div");
-      eventText.classList.add("event-text");
-      eventText.textContent = note.texto;
-
-      eventItem.appendChild(eventDateTime);
-      eventItem.appendChild(eventText);
-      proximosContainer.appendChild(eventItem);
-    });
   }
   async function updateCalendar() {
     await generateMonthDays(currentMonth, currentYear);
