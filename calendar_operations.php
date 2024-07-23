@@ -35,8 +35,8 @@ switch ($action) {
     case 'save_note':
         saveNote($data['date'], $data['note']);
         break;
-    case 'delete_note':
-        deleteNote($data['date'], $data['noteId']);
+    case 'complete_note':
+        completeNote($data['noteId']);
         break;
     case 'fetch_tasks':
         fetchTasks();
@@ -85,15 +85,50 @@ function saveNote($date, $note)
     }
 }
 
-function deleteNote($date, $noteId)
+function completeNote($noteId)
 {
     global $conn;
-    $stmt = $conn->prepare("DELETE FROM eventos_diarios WHERE id = ?");
-    $stmt->bind_param("i", $noteId);
-    if ($stmt->execute()) {
-        echo json_encode(['success' => 'Nota eliminada con éxito']);
-    } else {
-        echo json_encode(['error' => 'Error al eliminar la nota']);
+
+    // Iniciar una transacción
+    $conn->begin_transaction();
+
+    try {
+        // Obtener el estado actual de la tarea
+        $stmt = $conn->prepare("SELECT completado FROM eventos_diarios WHERE id = ?");
+        $stmt->bind_param("i", $noteId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $note = $result->fetch_assoc();
+
+        if ($note) {
+            $completada = $note['completado'];
+
+            if ($completada) {
+                $stmt = $conn->prepare("UPDATE eventos_diarios SET completado = 0 WHERE id = ?");
+                $stmt->bind_param("i", $noteId);
+            } else {
+                $stmt = $conn->prepare("UPDATE eventos_diarios SET completado = 1 WHERE id = ?");
+                $stmt->bind_param("i", $noteId);
+            }
+
+            if ($stmt->execute()) {
+                // Confirmar la transacción
+                $conn->commit();
+                echo json_encode(['success' => 'El estado del evento diario se ha actualizado correctamente']);
+            } else {
+                // Revertir la transacción en caso de error
+                $conn->rollback();
+                echo json_encode(['error' => 'Error al actualizar el estado del evento diario']);
+            }
+        } else {
+            // Revertir la transacción si no se encuentra la tarea
+            $conn->rollback();
+            echo json_encode(['error' => 'Evento diario no encontrada']);
+        }
+    } catch (Exception $e) {
+        // Revertir la transacción en caso de excepción
+        $conn->rollback();
+        echo json_encode(['error' => 'Error al procesar la solicitud: ' . $e->getMessage()]);
     }
 }
 
@@ -297,5 +332,3 @@ function reorderTask($posAntigua, $posNueva)
         echo json_encode(['error' => 'Error al reordenar la tarea: ' . $e->getMessage()]);
     }
 }
-
-?>

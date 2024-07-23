@@ -1,3 +1,4 @@
+import { showNotification } from "./calendar.js";
 export async function fetchNotesForDate(date) {
   try {
     const response = await fetch(
@@ -41,7 +42,7 @@ export async function saveNotesForDate(date, notes) {
     console.error("Error en saveNotesForDate:", error);
   }
 }
-export async function deleteNoteForDate(date, noteId) {
+export async function completeNoteForDate(noteId) {
   try {
     const response = await fetch(
       "http://192.168.1.14/calendar_operations.php",
@@ -50,14 +51,14 @@ export async function deleteNoteForDate(date, noteId) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ action: "delete_note", date, noteId }),
+        body: JSON.stringify({ action: "complete_note", noteId }),
       }
     );
     if (!response.ok) {
-      throw new Error("Error al eliminar la nota.");
+      throw new Error("Error al completar la nota.");
     }
   } catch (error) {
-    console.error("Error en deleteNoteForDate:", error);
+    console.error("Error en completeNoteForDate:", error);
   }
 }
 export async function fetchTasks() {
@@ -122,7 +123,9 @@ export async function updateMoreInfo(taskId, newMoreInfo) {
       }
     );
     if (!response.ok) {
-      throw new Error("Network response was not ok(update more info)");
+      showNotification("Error al guardar la descripción de la tarea", "red");
+    } else {
+      showNotification("Descripción de la tarea guardada con éxito", "green");
     }
     // const data = await response.json();
     // return data;
